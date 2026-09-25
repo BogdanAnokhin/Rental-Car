@@ -1,7 +1,7 @@
 name: PR Checks
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, labeled, edited]
 
 permissions:
@@ -47,7 +47,9 @@ jobs:
 
       - name: Read lint output
         id: lint_output
-        if: always()
+        if: >
+          always() &&
+          github.event.pull_request.head.repo.full_name == github.repository
         run: |
           OUTPUT=$(head -100 /tmp/lint-output.txt 2>/dev/null || echo "No output captured")
           echo "text<<EOF" >> "$GITHUB_OUTPUT"
@@ -55,7 +57,9 @@ jobs:
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Comment lint result on PR
-        if: always()
+        if: >
+           always() &&
+           github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         with:
           script: |
@@ -186,7 +190,9 @@ jobs:
           fi
 
       - name: Comment test/coverage result on PR
-        if: always()
+        if: >
+           always() &&
+           github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         with:
           script: |
@@ -390,7 +396,9 @@ jobs:
           echo "TEACHER_EOF" >> "$GITHUB_OUTPUT"
 
       - name: Comment functional requirements result on PR
-        if: always()
+        if: >
+          always() &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         with:
           script: |
