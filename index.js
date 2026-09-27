@@ -1,37 +1,37 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const rental = require('./rentalPrice');
-const fs = require('fs');
+const express = require("express");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const { price } = require("./rentalPrice");
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static('public'));
-app.use('/pictures', express.static('images'));
+app.use(express.static("public"));
+app.use("/pictures", express.static("images"));
 
-const formHtml = fs.readFileSync('form.html', 'utf8');
-const resultHtml = fs.readFileSync('result.html', 'utf8');
+const formHtml = fs.readFileSync("form.html", "utf8");
+const resultHtml = fs.readFileSync("result.html", "utf8");
 
-app.post('/', (req, res) => {
-    const post = req.body;
+app.post("/", (req, res) => {
+  const post = req.body;
 
-    const result = rental.calculatePrice(
-        String(post.type),
-        Number(post.age),
-        Date.parse(post.licensedate), // lisasin uue inputi
-        Date.parse(post.pickupdate),
-        Date.parse(post.dropoffdate)
-    );
+  const result = price(
+    String(post.pickup),
+    String(post.dropoff),
+    String(post.pickupdate),
+    String(post.dropoffdate),
+    String(post.type),
+    Number(post.age),
+    Number(post.licenseYears)
+  );
 
-    res.send(formHtml + resultHtml.replaceAll('$0', result));
+  res.send(formHtml + resultHtml.replaceAll("$0", result));
 });
 
-app.get('/', (req, res) => {
-    res.send(formHtml);
+app.get("/", (req, res) => {
+  res.send(formHtml);
 });
 
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-});
+app.listen(port);
